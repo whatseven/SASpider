@@ -18,7 +18,8 @@ class CSASpider(Spider):
         , 'https://www.scientificamerican.com/podcast/60-second-science/'
     ]
     custom_settings = {
-        'DBPATH': 'C:/Users/whatseven/source/repos/ScienceAmericanSpider/db.db3',
+        # 'DBPATH': 'C:/Users/whatseven/source/repos/ScienceAmericanSpider/db.db3',
+        'DBPATH': './db.db3',
     }
 
     def __init__(self, *args, **kwargs):
