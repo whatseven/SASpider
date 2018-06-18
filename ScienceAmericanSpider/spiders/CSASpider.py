@@ -1,4 +1,5 @@
 import logging
+import os
 
 from scrapy import Request
 from scrapy.exceptions import DropItem
@@ -15,11 +16,11 @@ class CSASpider(Spider):
         , 'https://www.scientificamerican.com/tech/'
         , 'https://www.scientificamerican.com/sustainability/'
         , 'https://www.scientificamerican.com/education/'
-        , 'https://www.scientificamerican.com/podcast/60-second-science/'
+        # , 'https://www.scientificamerican.com/podcast/60-second-science/'
     ]
     custom_settings = {
         # 'DBPATH': 'C:/Users/whatseven/source/repos/ScienceAmericanSpider/db.db3',
-        'DBPATH': './db.db3',
+        'DBPATH': os.path.join(os.path.abspath('..') ,'db.db3') ,
     }
 
     def __init__(self, *args, **kwargs):
@@ -29,6 +30,7 @@ class CSASpider(Spider):
 
     # cope with subIndex
     def parse(self, response):
+        # If it is a podcast
         if '60-second-science' in response.url:
             subHeaders=response.xpath("//div[contains(@data-podcast-type,'gridded-podcast')]")
             for subHeader in subHeaders:
@@ -43,6 +45,8 @@ class CSASpider(Spider):
                 else:
                     next_url = response.url + next_url[0]
                 yield Request(next_url)
+
+        # If it is an article
         else:
             subHeaders=response.xpath('//ul[contains(@class,"header-topic-list")]/li')
             for subHeader in subHeaders:
@@ -55,7 +59,7 @@ class CSASpider(Spider):
 
         next_url = response.xpath('//footer/div[3]/a/@href').extract()
         if next_url:
-            if int(next_url[0][6:])>30:
+            if int(next_url[0][6:])>100:
                 return
             self.logger.info("Article:"+next_url[0][6:])
             if 'page' in response.url:
